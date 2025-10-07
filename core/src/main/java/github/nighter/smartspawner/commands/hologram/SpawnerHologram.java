@@ -64,30 +64,33 @@ public class SpawnerHologram {
         Location holoLoc = spawnerLocation.clone().add(offsetX, offsetY, offsetZ);
 
         // Use the location scheduler to spawn the entity in the correct region
+        // *** ĐOẠN CODE ĐÃ ĐƯỢC SỬA LỖI BẮT ĐẦU TỪ ĐÂY ***
         Scheduler.runLocationTask(holoLoc, () -> {
             try {
-                TextDisplay display = spawnerLocation.getWorld().spawn(holoLoc, TextDisplay.class, td -> {
-                    td.setBillboard(Display.Billboard.CENTER);
-                    // Get alignment from config with CENTER as default
-                    String alignmentStr = plugin.getConfig().getString("hologram.alignment", "CENTER");
-                    TextDisplay.TextAlignment alignment;
-                    try {
-                        alignment = TextDisplay.TextAlignment.valueOf(alignmentStr.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        alignment = TextDisplay.TextAlignment.CENTER;
-                        plugin.getLogger().warning("Invalid hologram alignment in config: " + alignmentStr + ". Using CENTER as default.");
-                    }
-                    td.setAlignment(alignment);
-                    td.setViewRange(16.0f);
-                    td.setShadowed(plugin.getConfig().getBoolean("hologram.shadowed_text", true));
-                    td.setDefaultBackground(false);
-                    td.setTransformation(new Transformation(TRANSLATION, ROTATION, SCALE, ROTATION));
-                    td.setSeeThrough(plugin.getConfig().getBoolean("hologram.see_through", false));
-                    // Add custom name for identification
-                    td.setCustomName(uniqueIdentifier);
-                    td.setCustomNameVisible(false);
-                });
+                // Bước 1: Tạo entity TextDisplay trước
+                TextDisplay display = spawnerLocation.getWorld().spawn(holoLoc, TextDisplay.class);
 
+                // Bước 2: Cấu hình các thuộc tính của entity sau khi đã tạo
+                display.setBillboard(Display.Billboard.CENTER);
+                
+                String alignmentStr = plugin.getConfig().getString("hologram.alignment", "CENTER");
+                TextDisplay.TextAlignment alignment;
+                try {
+                    alignment = TextDisplay.TextAlignment.valueOf(alignmentStr.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    alignment = TextDisplay.TextAlignment.CENTER;
+                    plugin.getLogger().warning("Invalid hologram alignment in config: " + alignmentStr + ". Using CENTER as default.");
+                }
+                display.setAlignment(alignment);
+                display.setViewRange(16.0f);
+                display.setShadowed(plugin.getConfig().getBoolean("hologram.shadowed_text", true));
+                display.setDefaultBackground(false);
+                display.setTransformation(new Transformation(TRANSLATION, ROTATION, SCALE, ROTATION));
+                display.setSeeThrough(plugin.getConfig().getBoolean("hologram.see_through", false));
+                display.setCustomName(uniqueIdentifier);
+                display.setCustomNameVisible(false);
+
+                // Bước 3: Lưu lại và cập nhật text
                 textDisplay.set(display);
                 updateText();
             } catch (Exception e) {
@@ -95,6 +98,7 @@ public class SpawnerHologram {
                 e.printStackTrace();
             }
         });
+        // *** KẾT THÚC ĐOẠN CODE SỬA LỖI ***
     }
 
     public void updateText() {
